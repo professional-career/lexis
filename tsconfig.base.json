@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@erp/shared": ["packages/shared/src/index.ts"]
+    }
+  }
+}

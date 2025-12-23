@@ -1,0 +1,38 @@
+services:
+  postgres:
+    container_name: erp_database
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-erp_db}
+    volumes:
+      # Persistencia de datos: Sobrevive a reinicios y apagados
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      # Vital para que 'wait-on' o tus scripts sepan que la DB está lista de verdad
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Opcional: Interfaz gráfica web ligera para ver tus datos sin instalar nada extra
+  pgadmin:
+    container_name: erp_pgadmin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+    driver: local
