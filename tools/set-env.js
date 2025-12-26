@@ -1,13 +1,11 @@
-// tools/set-env.js
-const { writeFile } = require('fs');
-const { argv } = require('yargs'); // O usa process.argv si no quieres instalar yargs
-require('dotenv').config(); // Carga las variables del .env raíz
+const { writeFileSync, mkdirSync } = require('fs');
 
-// Si tienes variables que Angular DEBE conocer, lístalas aquí para seguridad
-// (No queremos exponer secretos de base de datos por accidente al frontend)
-const targetPath = './apps/client/src/environments/environment.development.ts';
+require('dotenv').config();
 
-const envConfigFile = `
+const targetPath = './apps/client/src/environments/environment.ts';
+const targetPathDev = './apps/client/src/environments/environment.development.ts';
+
+const envFileContent = `
 export const environment = {
   production: false,
   apiUrl: '${process.env.API_URL || 'http://localhost:3000/api'}',
@@ -16,10 +14,9 @@ export const environment = {
 };
 `;
 
-writeFile(targetPath, envConfigFile, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(`✅ Angular environment generado en ${targetPath}`);
-  }
-});
+mkdirSync('./apps/client/src/environments', { recursive: true });
+writeFileSync( targetPath, envFileContent, (err) => {throw new Error(err)});
+writeFileSync( targetPathDev, envFileContent, (err) => {throw new Error(err)});
+
+console.log(`✅ Angular environment generado en ${targetPath}`);
+console.log(`✅ Angular def-environment generado en ${targetPathDev}`);
