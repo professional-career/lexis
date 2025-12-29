@@ -1,25 +1,51 @@
 {
-	"name": "mi-erp-monorepo",
+	"name": "mi-monorepo",
 	"private": true,
 	"scripts": {
 		"// --- COMANDOS MAESTROS ---": "",
+
 		"dev": "pnpm db:up && concurrently \"pnpm shared:watch\" \"pnpm api:dev\" \"pnpm web:dev\"",
 		"build:all": "pnpm shared:build && pnpm api:build && pnpm web:build",
+
 		"// --- BASE DE DATOS ---": "",
+
 		"db:up": "docker-compose up -d postgres",
 		"db:down": "docker-compose down",
-		"db:logs": "docker logs -f erp_database",
+		"db:logs": "docker logs -f mono_database",
 		"db:nuke": "docker-compose down -v",
+
+		"// --- GENERADORES (DX) ---": "",
+
+		"// API: Crea un recurso CRUD completo (Controller, Service, DTOs, Entity)": "",
+		"api:res": "pnpm --filter api exec nest g resource",
+
+		"// API: Crea solo un servicio o controlador": "",
+		"api:g": "pnpm --filter api exec nest g",
+
+		"// WEB: Crea Componentes (Standalone por defecto en Angular 18)": "",
+		"web:c": "pnpm --filter client exec ng g c",
+
+		"// WEB: Crea Servicios": "",
+		"web:s": "pnpm --filter client exec ng g s",
+		
+		"// WEB: Comando genérico (pipes, directivas, guards)": "",
+		"web:g": "pnpm --filter client exec ng g",
+
 		"// --- ATAJOS A LOS PROYECTOS ---": "",
-		"shared:watch": "pnpm --filter @erp/shared run build --watch",
-		"shared:build": "pnpm --filter @erp/shared run build",
+		
+		"generate:env": "node tools/set-env.js",
+
+		"shared:watch": "pnpm --filter @shared run build --watch",
+		"shared:build": "pnpm --filter @shared run build",
+
 		"api:format": "pnpm --filter api run format",
 		"api:dev": "pnpm --filter api run start:dev",
 		"api:build": "pnpm --filter api run build",
-		"generate:env": "node tools/set-env.js",
+
 		"web:dev": "pnpm generate:env && pnpm --filter client run start",
 		"web:build": "pnpm generate:env && pnpm --filter client run build",
-		"postinstall": "node tools/setup.js"
+
+		"postinstall": "node tools/setup.js && pnpm run generate:env"
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.1",

@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: erp_database
+    container_name: mono_database
     image: postgres:16-alpine
     restart: always
     ports:
@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-erp_db}
+      POSTGRES_DB: ${DB_NAME:-mono_db}
     volumes:
       # Persistencia de datos: Sobrevive a reinicios y apagados
       - pg_data:/var/lib/postgresql/data
@@ -21,7 +21,7 @@ services:
 
   # Opcional: Interfaz gráfica web ligera para ver tus datos sin instalar nada extra
   pgadmin:
-    container_name: erp_pgadmin
+    container_name: mono_pgadmin
     image: dpage/pgadmin4:latest
     restart: always
     environment:
