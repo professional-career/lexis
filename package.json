@@ -1,5 +1,5 @@
 {
-	"name": "mi-monorepo",
+	"name": "@batey/root",
 	"private": true,
 	"scripts": {
 		"// --- COMANDOS MAESTROS ---": "",
@@ -27,7 +27,7 @@
 		"shared:watch": "pnpm --filter @shared run build --watch",
 		"shared:build": "pnpm --filter @shared run build",
 		"api:format": "pnpm --filter api run format",
-		"api:dev": "pnpm --filter api run start:dev",
+		"api:dev": "wait-on tcp:5432 && pnpm --filter api run start:dev",
 		"api:build": "pnpm --filter api run build",
 		"client:dev": "pnpm generate:env && pnpm --filter client run start",
 		"client:build": "pnpm generate:env && pnpm --filter client run build",

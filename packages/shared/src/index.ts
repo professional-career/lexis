@@ -1,4 +1,4 @@
-export const SHARED_APP_NAME = 'Monorepo App';
+export const SHARED_APP_NAME = 'Batey';
 
 export interface BaseEntity {
     id: string;

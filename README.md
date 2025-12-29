@@ -1,14 +1,15 @@
-# Monorepo System
+# Batey
+## **_The NAP Stack Monorepo for Solo Developers_**
 
-Este proyecto es un sistema cosntruido con una arquitectura de Monorepo "Lightweight" basada en PNPM Workspaces.
+Batey es un sistema de monorepo ligero basado en la arquitectura NAP (NestJS, Angular, PNPM) diseñado para la velocidad y la centralización.
 
 A diferencia de soluciones pesadas como Nx, este repositorio utiliza herramientas nativas y scripts orquestados para mantener la simplicidad, velocidad y control total sobre el flujo de desarrollo.
 
 ## 🛠️ Tech Stack
 
-- **Gestor de paquetes**: PNPM (Workspaces)
-- **Frontend**: Angular 18+ (PrimeNG, Signals) + Nginx (Producción)
 - **Backend**: NestJS (TypeORM)
+- **Frontend**: Angular 18+ (PrimeNG, Signals) + Nginx (Producción)
+- **Gestor de paquetes**: PNPM (Workspaces)
 - **Base de datos**: PostgreSQL (Dockerizada)
 - **Librería compartida**: TypeScript puro (Interfaces & DTOs)
 
