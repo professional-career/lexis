@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { TestService } from './test/test.service';
 import * as path from 'path';
 
 @Module({
@@ -13,6 +12,6 @@ import * as path from 'path';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, TestService],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

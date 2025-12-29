@@ -3,8 +3,9 @@
 	"private": true,
 	"scripts": {
 		"// --- COMANDOS MAESTROS ---": "",
-		"dev": "pnpm db:up && concurrently \"pnpm shared:watch\" \"pnpm api:dev\" \"pnpm web:dev\"",
-		"build:all": "pnpm shared:build && pnpm api:build && pnpm web:build",
+		"dev": "pnpm db:up && concurrently -k -n \"SHARED,API,CLNT\" -c \"blue,magenta,cyan\" \"pnpm shared:watch\" \"pnpm api:dev\" \"pnpm client:dev\"",
+		"prod": "docker-compose -f docker-compose.prod.yml up --build",
+		"build:all": "pnpm shared:build && pnpm api:build && pnpm client:build",
 		"// --- BASE DE DATOS ---": "",
 		"db:up": "docker-compose up -d postgres",
 		"db:down": "docker-compose down",

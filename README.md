@@ -7,7 +7,7 @@ A diferencia de soluciones pesadas como Nx, este repositorio utiliza herramienta
 ## 🛠️ Tech Stack
 
 - **Gestor de paquetes**: PNPM (Workspaces)
-- **Frontend**: Angular 18+ (PrimeNG, Signals)
+- **Frontend**: Angular 18+ (PrimeNG, Signals) + Nginx (Producción)
 - **Backend**: NestJS (TypeORM)
 - **Base de datos**: PostgreSQL (Dockerizada)
 - **Librería compartida**: TypeScript puro (Interfaces & DTOs)
@@ -80,6 +80,22 @@ Control total sobre el contenedor de PostgreSQL sin memorizar comandos de Docker
 | ```pnpm db:down``` | Detiene y elimina el contenedor (mantiene los datos). |
 | ```pnpm db:logs``` | Muestra los logs de la base de datos en tiempo real. |
 | ```pnpm db:nuke``` | ⚠️ **DANGER**: Detiene el contenedor y **borra el volumen de datos**. Útil para resetear la DB a cero. |
+
+## 🚢 Despliegue a Producción (Docker)
+
+El sistema incluye una configuración de **Multi-Stage Build** optimizada para producción.
+
+1.  **Construye las imágenes**: Utiliza el contexto raíz para incluir librerías compartidas.
+2.  **Orquesta los servicios**: Levanta la Base de datos, API y Cliente (Nginx) en una sola red.
+
+```bash
+# Construye y levanta todo el entorno de producción localmente
+pnpm prod
+```
+
+-   **Frontend**: http://localhost (Puerto 80, servido por Nginx)
+-   **Backend**: http://localhost:3000
+-   **Database**: Puerto 5432
 
 ## 🛠️ Utilidades y Build
 | Comando | Descripción |

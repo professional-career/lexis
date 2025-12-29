@@ -1,0 +1,53 @@
+services:
+  # --------------------------------------------------------------------------
+  # Database (Reusing the same service name/config as dev for simplicity, 
+  # but in true prod, this might be an external managed DB)
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: mono_prod_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-monorepo_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+  # --------------------------------------------------------------------------
+  # NestJS API
+  # --------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: mono_prod_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-monorepo_db}
+    depends_on:
+      - postgres
+
+  # --------------------------------------------------------------------------
+  # Angular Client (Nginx)
+  # --------------------------------------------------------------------------
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+    container_name: mono_prod_client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_prod_data:
