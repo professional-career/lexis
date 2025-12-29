@@ -93,6 +93,7 @@ Control total sobre el contenedor de PostgreSQL sin memorizar comandos de Docker
 
 **Error: "Port 5432 is already allocated"** Tiene otra instancia de Postgres corriendo en tu máquina. Ejecuta ```pnpm db:down``` o detén tu servicio local de Postgres.
 
-**Error: Angular no cuentra** ```@shared``` Asegúrate de que ```pnpm shared:watch``` o ```pnpm shared:build``` se haya ejecutado al menos una vez. El ```tsconfig``` depende de los archivos compilados o enlazados correctamente.
+**Error: Angular no encuentra** ```@shared```
+Asegúrate de que las rutas en `tsconfig.base.json` apunten correctamente a `packages/shared/src/index.ts`. Al usar "Source-First", no necesitas compilar la librería para desarrollo, los cambios se reflejan al instante.
 
 **Cambio en variables de entorno** Si editas el ```.env``` raíz, debes reiniciar el comando ```pnpm run dev``` para que Angular regenere su configuración y NestJS recargue el contexto.
