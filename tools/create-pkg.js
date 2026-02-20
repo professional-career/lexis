@@ -13,11 +13,11 @@ if (!type || !name) {
 const targetDir = path.join(__dirname, '../packages', name);
 
 const commands = {
-  angular: ['@angular/cli', 'new', name, '--package-manager', 'pnpm', '--routing', '--style', 'css', '--standalone'],
+  angular: ['@angular/cli', 'new', name, '--package-manager', 'pnpm', '--routing', '--style', 'css', '--standalone', '--skip-install'],
   astro: ['create', 'astro@latest', name, '--no-install', '--no-git', '--typescript', 'strict'],
-  next: ['create-next-app@latest', name, '--use-pnpm', '--typescript', '--tailwind', '--eslint', '--app'],
+  next: ['create-next-app@latest', name, '--use-pnpm', '--typescript', '--tailwind', '--eslint', '--app', '--skip-install'],
   vite: ['create', 'vite@latest', name, '--template', 'react-ts'],
-  nest: ['@nestjs/cli', 'new', name, '--package-manager', 'pnpm'],
+  nest: ['@nestjs/cli', 'new', name, '--package-manager', 'pnpm', '--skip-install'],
 };
 
 const cmd = commands[type];
