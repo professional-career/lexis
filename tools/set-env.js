@@ -2,8 +2,8 @@ const { writeFileSync, mkdirSync } = require('fs');
 
 require('dotenv').config();
 
-const targetPath = './apps/client/src/environments/environment.ts';
-const targetPathDev = './apps/client/src/environments/environment.development.ts';
+const targetPath = './packages/client/src/environments/environment.ts';
+const targetPathDev = './packages/client/src/environments/environment.development.ts';
 
 const envFileContent = `
 export const environment = {

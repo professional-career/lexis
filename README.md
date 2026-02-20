@@ -1,116 +1,116 @@
-# Batey
-## **_The NAP Stack Monorepo for Solo Developers_**
+# Lexis
+## **_The Agnostic Monorepo Orchestrator for Solo Developers_**
 
-Batey es un sistema de monorepo ligero basado en la arquitectura NAP (NestJS, Angular, PNPM) diseñado para la velocidad y la centralización.
+Lexis (nombrado en honor al genio inventor de Lufia II) es un sistema de monorepo ligero y agnóstico basado en **PNPM Workspaces**. Está diseñado para centralizar el desarrollo de múltiples aplicaciones y servicios sin imponer un stack tecnológico específico, priorizando la velocidad y el control total.
 
-A diferencia de soluciones pesadas como Nx, este repositorio utiliza herramientas nativas y scripts orquestados para mantener la simplicidad, velocidad y control total sobre el flujo de desarrollo.
+A diferencia de soluciones pesadas, Lexis utiliza una **arquitectura plana** donde cada componente (Frontend, Backend, Database, Scripts) vive como un paquete independiente dentro de la carpeta `packages/`.
 
-## 🛠️ Tech Stack
+## ✨ Características Principales
 
-- **Backend**: NestJS (TypeORM)
-- **Frontend**: Angular 18+ (PrimeNG, Signals) + Nginx (Producción)
-- **Gestor de paquetes**: PNPM (Workspaces)
-- **Base de datos**: PostgreSQL (Dockerizada)
-- **Librería compartida**: TypeScript puro (Interfaces & DTOs)
+- **Tecnología Agnóstica**: Usa React, Angular, NestJS, Astro, Go o Rust. Si puede vivir en un paquete de Node, puede vivir en Lexis.
+- **Arquitectura Plana**: Todo reside en `packages/`, eliminando la distinción artificial entre "apps" y "libs".
+- **Contract-First**: Los acuerdos de datos viven en `contracts/`, forzando a todos los paquetes a hablar el mismo idioma.
+- **Single Source of Truth (SSOT)**: Configuración centralizada mediante un único archivo `.env` en la raíz.
+- **DX de Primera Clase**: Comandos orquestados para levantar todo el entorno de desarrollo con una sola instrucción.
+- **Docker-Ready**: Configuración para despliegue productivo mediante Multi-Stage builds.
 
-## 🚀 Quick Start (One Command)
-
-El proyecto está diseñado para "Zero Config". Al clonar el repositorio, la configuración de entorno se genera automáticamente.
-
-1. **Prerrequisitos**
-    - Node.JS (LTS)
-    - Docker & Docker Compose (Debe estar corriendo)
-    - PNPM (npm i -g pnpm)
-
-2. **Instalación**
-
-```bash
-# Instala dependencias y genera automáticamente el archivo .env raíz
-pnpm install
-```
-
-3. **Desarrollo**
-
-Este comando levanta la base de datos, compila la librería en modo watch, y arranca tanto el Backend como el Frontend en paralelo.
-
-```bash
-pnpm dev
-```
-
-## 📂 Arquitectura del proyecto
+## 📂 Estructura del Proyecto
 
 ```text
 /
-├── apps/
-│   ├── client/       # Angular App (Puerto 4200)
-│   └── api/          # NestJS API (Puerto 3000)
+├── contracts/        # ACUERDOS: Interfaces, Enums y DTOs globales
 ├── packages/
-│   └── shared/       # Librería compartida (DTOs, Interfaces, Enums)
-├── tools/            # Scripts de orquestación y entorno
-├── .env              # Single Source of Truth (Generado desde .env.example)
+│   ├── api/          # Implementación Backend
+│   ├── client/       # Implementación Frontend
+│   ├── database/     # Capa de datos independiente (Prisma)
+│   └── ...           # Cualquier nuevo servicio o librería
+├── tools/            # Scripts de utilidad y configuración
+├── .env              # La "Única Fuente de Verdad"
 ├── .env.example
 ├── docker-compose.yml
 └── pnpm-workspace.yaml
 ```
 
-### Gestión de configuración (SSOT)
-Utilizamos una estrategia de Single Source of Truth:
-* El archivo ```.env``` en la raíz es la única verdad.
-* **NestJS**: Lee este archivo directamente.
-* **Angular**: Al ejecutar cualquier comando, el script ```tools/set-env.js``` inyecta las variables públicas en environment.ts. No edites ```environment.ts``` manualmente.
+## 🚀 Inicio Rápido
 
-## 🤖 Guía de comandos (DX)
-Todos los comandos se ejecutan desde la raíz del proyecto.
+El proyecto está diseñado para "Zero Config". La configuración de entorno se genera automáticamente al instalar.
 
-### 🧬 Generadores de código (Scaffolding)
+1. **Instalación**
+```bash
+pnpm install
+```
 
-| Comando  | Descripción  |  Ejemplo  |
-|----------|--------------|-----------|
-|```pnpm api:res <nombre>``` | **NestJS**: Crea un recurso CRUD completo (Controller, Service, DTO, Entity). | ```pnpm api:res products``` |
-|```pnpm api:g <tipo> <nombre>``` | **NestJS**: Generador genérico. | ```pnpm api:g controller auth``` |
-|```pnpm web:c <path>``` | **Angular**: Crea un Componente (Standalone por defecto). | ```pnpm web:c shared/ui/button``` |
-|```pnpm web:s <path>``` | **Angular**: Crea un Servicio. | ```pnpm web:s core/auth``` |
-|```pnpm web:g <tipo> <path>``` | **Angular**: Generador genérico (Guards, Pipes, etc). | ```pnpm web:g guard auth``` |
+2. **Desarrollo**
+Este comando levanta la base de datos, activa el modo watch de Prisma y arranca los servicios principales en paralelo.
+```bash
+pnpm dev
+```
 
-## 🗄️ Base de datos (Docker)
-Control total sobre el contenedor de PostgreSQL sin memorizar comandos de Docker.
+## 🤖 Guía de Comandos (DX)
 
+Todos los comandos se ejecutan desde la raíz. Lexis utiliza `--filter` de PNPM internamente.
+
+### Desarrollo y Construcción
+| Comando | Descripción |
+|---------|-------------|
+| `pnpm dev` | Levanta DB, Prisma Watch y Aplicaciones (API + Web). |
+| `pnpm build:all` | Compila todos los paquetes para producción. |
+| `pnpm generate:env` | Inyecta variables del `.env` raíz en los entornos del frontend. |
+
+### Base de Datos (Docker + Prisma)
 | Comando | Acción |
 |---------|--------|
-| ```pnpm db:up``` | Levanta el contenedor de Postgres en segundo plano (detach). |
-| ```pnpm db:down``` | Detiene y elimina el contenedor (mantiene los datos). |
-| ```pnpm db:logs``` | Muestra los logs de la base de datos en tiempo real. |
-| ```pnpm db:nuke``` | ⚠️ **DANGER**: Detiene el contenedor y **borra el volumen de datos**. Útil para resetear la DB a cero. |
+| `pnpm db:up` | Levanta el contenedor de PostgreSQL. |
+| `pnpm db:down` | Detiene el contenedor. |
+| `pnpm db:migrate` | Ejecuta migraciones pendientes. |
+| `pnpm db:nuke` | ⚠️ **Borra la base de datos y sus volúmenes**. |
 
-## 🚢 Despliegue a Producción (Docker)
+### Generadores (Scaffolding)
+| Comando | Descripción |
+|---------|-------------|
+| `pnpm api:res <nombre>` | Genera un recurso CRUD en el API. |
+| `pnpm web:c <nombre>` | Genera un componente en el Frontend. |
 
-El sistema incluye una configuración de **Multi-Stage Build** optimizada para producción.
+## 🧪 Creando Nuevos Inventos (Añadir Paquetes)
 
-1.  **Construye las imágenes**: Utiliza el contexto raíz para incluir librerías compartidas.
-2.  **Orquesta los servicios**: Levanta la Base de datos, API y Cliente (Nginx) en una sola red.
+Para añadir una nueva tecnología al ecosistema Lexis, utiliza los comandos de generación rápida:
 
 ```bash
-# Construye y levanta todo el entorno de producción localmente
+# Para aplicaciones web (Astro, Next.js, React/Vite)
+pnpm create:astro <nombre>
+pnpm create:next <nombre>
+pnpm create:vite <nombre>
+
+# Para servicios backend (NestJS)
+pnpm create:nest <nombre>
+```
+
+Estos comandos se encargan de:
+1.  **Ubicación**: Colocar el proyecto automáticamente en `packages/`.
+2.  **Configuración**: Aplicar los estándares de Lexis para TypeScript y PNPM.
+3.  **Vincular**: Recuerda ejecutar `pnpm install` en la raíz para conectar el nuevo paquete al workspace.
+
+### ¿Cómo conectarlo a la Base de Datos?
+Si tu nuevo invento necesita datos:
+```bash
+pnpm add @lexis/database --filter <nombre-del-paquete>
+```
+
+## 🚢 Despliegue
+
+Lexis incluye una configuración de producción optimizada:
+
+```bash
+# Construye y levanta el entorno de producción localmente
 pnpm prod
 ```
 
--   **Frontend**: http://localhost (Puerto 80, servido por Nginx)
--   **Backend**: http://localhost:3000
--   **Database**: Puerto 5432
+## ⚙️ Gestión de Configuración (SSOT)
 
-## 🛠️ Utilidades y Build
-| Comando | Descripción |
-|---------|-------------|
-|```pnpm build:all``` | Compila ```shared```, ```api``` y ```client``` para producción. |
-|```pnpm shared:watch``` | Compila la librería compartida y espera cambios (usando internamente por ```pnpm dev```).|
-|```pnpm api:format```| Ejecuta Prettier/Linter en el Backend.|
-|```pnpm generate:env``` | Fuerza la regeneración del ```environment.ts``` en Angular basado en el .env raíz.|
+Lexis utiliza una estrategia de **Single Source of Truth**:
+1. El archivo `.env` en la raíz contiene todas las credenciales y URLs.
+2. Los servicios de **Backend** leen este archivo directamente.
+3. Los servicios de **Frontend** reciben las variables públicas mediante el script `tools/set-env.js` (no edites los archivos `environment.ts` manualmente).
 
-## 🐛 Troubleshooting
-
-**Error: "Port 5432 is already allocated"** Tiene otra instancia de Postgres corriendo en tu máquina. Ejecuta ```pnpm db:down``` o detén tu servicio local de Postgres.
-
-**Error: Angular no encuentra** ```@shared```
-Asegúrate de que las rutas en `tsconfig.base.json` apunten correctamente a `packages/shared/src/index.ts`. Al usar "Source-First", no necesitas compilar la librería para desarrollo, los cambios se reflejan al instante.
-
-**Cambio en variables de entorno** Si editas el ```.env``` raíz, debes reiniciar el comando ```pnpm run dev``` para que Angular regenere su configuración y NestJS recargue el contexto.
+---
+*Lexis - Menos fricción, más código e inventos geniales.*

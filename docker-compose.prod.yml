@@ -21,7 +21,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: packages/api/Dockerfile
     container_name: mono_prod_api
     restart: always
     ports:
@@ -41,7 +41,7 @@ services:
   client:
     build:
       context: .
-      dockerfile: apps/client/Dockerfile
+      dockerfile: packages/client/Dockerfile
     container_name: mono_prod_client
     restart: always
     ports:

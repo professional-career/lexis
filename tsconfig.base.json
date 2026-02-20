@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared": ["packages/shared/src/index.ts"]
+      "@lexis/contracts": ["contracts/src/index.ts"]
     }
   }
 }

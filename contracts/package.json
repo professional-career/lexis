@@ -1,0 +1,14 @@
+{
+  "name": "@lexis/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Contratos de entidad y tipos compartidos para el ecosistema Lexis",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
+}
