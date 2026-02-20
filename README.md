@@ -76,7 +76,8 @@ Todos los comandos se ejecutan desde la raíz. Lexis utiliza `--filter` de PNPM 
 Para añadir una nueva tecnología al ecosistema Lexis, utiliza los comandos de generación rápida:
 
 ```bash
-# Para aplicaciones web (Astro, Next.js, React/Vite)
+# Para aplicaciones web (Angular, Astro, Next.js, React/Vite)
+pnpm create:angular <nombre>
 pnpm create:astro <nombre>
 pnpm create:next <nombre>
 pnpm create:vite <nombre>

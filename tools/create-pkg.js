@@ -6,13 +6,14 @@ const name = process.argv[3];
 
 if (!type || !name) {
   console.error('❌ Uso: node tools/create-pkg.js <tipo> <nombre>');
-  console.error('Tipos soportados: astro, next, vite, nest');
+  console.error('Tipos soportados: astro, next, vite, nest, angular');
   process.exit(1);
 }
 
 const targetDir = path.join(__dirname, '../packages', name);
 
 const commands = {
+  angular: ['@angular/cli', 'new', name, '--package-manager', 'pnpm', '--routing', '--style', 'css', '--standalone'],
   astro: ['create', 'astro@latest', name, '--no-install', '--no-git', '--typescript', 'strict'],
   next: ['create-next-app@latest', name, '--use-pnpm', '--typescript', '--tailwind', '--eslint', '--app'],
   vite: ['create', 'vite@latest', name, '--template', 'react-ts'],
@@ -29,7 +30,7 @@ if (!cmd) {
 console.log(`🧪 Lexis está forjando un nuevo invento: ${name} (${type})...`);
 
 // Ejecutamos el comando dentro de la carpeta packages
-const executable = type === 'next' || type === 'nest' ? 'npx' : 'pnpm';
+const executable = type === 'next' || type === 'nest' || type === 'angular' ? 'npx' : 'pnpm';
 
 const result = spawnSync(executable, cmd, {
   cwd: path.join(__dirname, '../packages'),
