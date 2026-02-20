@@ -23,6 +23,7 @@
     "web:c": "pnpm --filter client exec ng g c",
     "web:s": "pnpm --filter client exec ng g s",
     "web:g": "pnpm --filter client exec ng g",
+    "create:angular": "node tools/create-pkg.js angular",
     "create:astro": "node tools/create-pkg.js astro",
     "create:next": "node tools/create-pkg.js next",
     "create:vite": "node tools/create-pkg.js vite",
