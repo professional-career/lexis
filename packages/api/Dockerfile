@@ -15,25 +15,22 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # 2. Copy the actual packages and apps source code
-# We need to copy everything because pnpm workspaces rely on the file structure
-COPY apps/api ./apps/api
-COPY packages/shared ./packages/shared
-# (Add other apps/libs here if needed in the future)
+COPY packages/api ./packages/api
+COPY packages/database ./packages/database
 
-# 3. Install dependencies (frozen-lockfile for consistency)
+# 3. Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# 4. Build the shared library (if needed by your setup, though source-first might not strictly require it, 
-#    NestJS build often likes to see the dist folder if referenced in tsconfig paths)
-#    In our case, we just build the API, which will pull in the shared code.
-#    However, if shared needs a build step, do it here:
-RUN pnpm --filter @shared run build
+# 4. Generate Prisma Client
+RUN pnpm --filter @lexis/database run db:generate
 
-# 5. Build the API project
+# 5. Build the database package
+RUN pnpm --filter @lexis/database run build
+
+# 6. Build the API project
 RUN pnpm --filter api run build
 
-# 6. Prune dependencies to only include what's needed for production
-#    (This reduces image size significantly)
+# 7. Prune dependencies
 RUN pnpm --filter api deploy --prod /prod/api
 
 # ------------------------------------------------------------------------------
