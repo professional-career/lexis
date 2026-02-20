@@ -1,0 +1,8 @@
+export var TASK_STATUS;
+(function (TASK_STATUS) {
+    TASK_STATUS["PENDING"] = "PENDING";
+    TASK_STATUS["IN_PROGRESS"] = "IN_PROGRESS";
+    TASK_STATUS["COMPLETED"] = "COMPLETED";
+    TASK_STATUS["CANCELLED"] = "CANCELLED";
+})(TASK_STATUS || (TASK_STATUS = {}));
+//# sourceMappingURL=task.js.map

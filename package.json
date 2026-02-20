@@ -33,7 +33,7 @@
     "// --- ATAJOS A LOS PROYECTOS ---": "",
     "generate:env": "pnpm --filter \"*\" --if-present run generate:env",
     "api:format": "pnpm --filter api run format",
-    "api:dev": "wait-on tcp:5432 && pnpm --filter api run start:dev",
+    "api:dev": "pnpm --filter api run start:dev",
     "api:build": "pnpm --filter api run build",
     "web:dev": "pnpm generate:env && pnpm --filter client run start",
     "web:build": "pnpm generate:env && pnpm --filter client run build",

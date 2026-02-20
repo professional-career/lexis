@@ -1,38 +1,44 @@
 services:
   postgres:
-    container_name: mono_database
     image: postgres:16-alpine
-    restart: always
-    ports:
-      - "${DB_PORT:-5432}:5432"
+    container_name: lexis-pg-dev
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-mono_db}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
     volumes:
-      # Persistencia de datos: Sobrevive a reinicios y apagados
-      - pg_data:/var/lib/postgresql/data
+      - lexis-postgres-data-dev:/var/lib/postgresql/data
+    networks:
+      - lexis-dev-network
     healthcheck:
-      # Vital para que 'wait-on' o tus scripts sepan que la DB está lista de verdad
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  # Opcional: Interfaz gráfica web ligera para ver tus datos sin instalar nada extra
   pgadmin:
-    container_name: mono_pgadmin
     image: dpage/pgadmin4:latest
-    restart: always
+    container_name: lexis-pgadmin-dev
+    restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "8080:80"
+      - "${PGADMIN_PORT}:80"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+     - lexis-dev-network
 
 volumes:
-  pg_data:
-    driver: local
+  lexis-postgres-data-dev:
+    name: lexis-postgres-data-dev
+
+networks:
+  lexis-dev-network:
+    name: lexis-dev-network
+    driver: bridge

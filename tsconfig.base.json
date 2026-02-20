@@ -1,7 +1,18 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "sourceMap": true,
     "paths": {
+      "@lexis/database": ["packages/database/src/index.ts"],
       "@lexis/contracts": ["contracts/src/index.ts"]
     }
   }
