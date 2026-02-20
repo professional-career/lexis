@@ -12,17 +12,15 @@ if (!pkgName) {
 const dbPkgPath = path.join(__dirname, '../packages/database');
 const targetPkgPath = path.join(__dirname, '../packages', pkgName);
 
-// --- FUNCIÓN DE AUTOSANACIÓN ---
+// --- FUNCIÓN DE AUTOSANACIÓN (Prisma 7 + Adapters) ---
 function ensureDatabaseCore() {
   if (fs.existsSync(path.join(dbPkgPath, 'package.json'))) return;
 
-  console.log('⚠️  Núcleo de datos no encontrado. Reconstruyendo @lexis/database...');
+  console.log('⚠️  Núcleo de datos no encontrado. Reconstruyendo @lexis/database (Prisma 7 Standard)...');
 
-  // 1. Crear directorios
   fs.mkdirSync(path.join(dbPkgPath, 'src'), { recursive: true });
   fs.mkdirSync(path.join(dbPkgPath, 'prisma'), { recursive: true });
 
-  // 2. Crear package.json
   const pkgJson = {
     name: "@lexis/database",
     version: "1.0.0",
@@ -33,30 +31,42 @@ function ensureDatabaseCore() {
       "db:migrate": "prisma migrate dev",
       "build": "tsc"
     },
-    dependencies: { "@prisma/client": "^5.10.0" },
-    devDependencies: { "prisma": "^5.10.0", "typescript": "^5.1.3" }
+    dependencies: { 
+      "@prisma/client": "7.4.1",
+      "@prisma/adapter-pg": "7.4.1",
+      "pg": "^8.11.0"
+    },
+    devDependencies: { "prisma": "7.4.1", "typescript": "^5.1.3", "dotenv": "^16.4.0", "@types/pg": "^8.11.0" }
   };
   fs.writeFileSync(path.join(dbPkgPath, 'package.json'), JSON.stringify(pkgJson, null, 2));
 
-  // 3. Crear schema.prisma
+  // Prisma 7 Config
+  const prismaConfig = `import { defineConfig } from 'prisma/config';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+export default defineConfig({
+  schema: './prisma/schema.prisma',
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
+});`;
+  fs.writeFileSync(path.join(dbPkgPath, 'prisma.config.ts'), prismaConfig);
+
+  // Prisma 7 Schema
   const schema = `generator client {
   provider = "prisma-client-js"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id    String  @id @default(cuid())
-  email String  @unique
-  name  String?
 }`;
   fs.writeFileSync(path.join(dbPkgPath, 'prisma/schema.prisma'), schema);
 
-  // 4. Crear index.ts
-  const indexTs = `export * from '@prisma/client';\nimport { PrismaClient } from '@prisma/client';\nexport const db = new PrismaClient();`;
+  const indexTs = `export * from '@prisma/client';\nimport { PrismaClient } from '@prisma/client';\nexport { PrismaClient };`;
   fs.writeFileSync(path.join(dbPkgPath, 'src/index.ts'), indexTs);
 
   console.log('✅ Núcleo de datos restaurado. Sincronizando workspace...');
@@ -70,35 +80,39 @@ if (!fs.existsSync(targetPkgPath)) {
   process.exit(1);
 }
 
-// Aseguramos que el núcleo existe antes de intentar vincularlo
 ensureDatabaseCore();
 
 console.log(`📡 Conectando "${pkgName}" al núcleo de datos de Lexis...`);
 
-// Añadir la dependencia local usando el protocolo workspace
+// Añadir contratos y base de datos
 spawnSync('pnpm', ['add', '@lexis/database@workspace:*', '--filter', pkgName], {
   stdio: 'inherit',
   shell: true,
 });
 
-// Boilerplate inteligente para NestJS
 const targetPkgJson = require(path.join(targetPkgPath, 'package.json'));
 if (targetPkgJson.dependencies && targetPkgJson.dependencies['@nestjs/common']) {
-  console.log('🧱 Detectado NestJS. Generando PrismaService...');
+  console.log('🧱 Detectado NestJS. Generando PrismaService (Prisma 7 Adapter Standard)...');
   
   const serviceContent = `import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { db } from '@lexis/database';
+import { PrismaClient } from '@lexis/database';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 @Injectable()
-export class PrismaService implements OnModuleInit, OnModuleDestroy {
-  public client = db;
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor() {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+    super({ adapter });
+  }
 
   async onModuleInit() {
-    await this.client.$connect();
+    await this.$connect();
   }
 
   async onModuleDestroy() {
-    await this.client.$disconnect();
+    await this.$disconnect();
   }
 }
 `;
@@ -110,4 +124,4 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   }
 }
 
-console.log(`\n✨ ¡Prisma habilitado en "${pkgName}"!`);
+console.log(`\n✨ ¡Prisma 7 (with Adapters) habilitado en "${pkgName}"!`);

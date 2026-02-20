@@ -7,4 +7,4 @@ import { TodoComponent } from './todo.component';
   imports: [TodoComponent],
   template: `<app-todo></app-todo>`,
 })
-export class AppComponent {}
+export class App {}

@@ -1,14 +1,14 @@
 # GEMINI.md - Lexis Monorepo Context
 
-This file provides the foundational context and development mandates for the **Lexis** monorepo, following a flat **PNPM Workspace** standard with a **Contract-First** architecture.
+This file provides the foundational context and development mandates for the **Lexis** monorepo, following a flat **PNPM Workspace** standard with a **Contract-First** architecture and **Prisma 7 Standard**.
 
 ## 🚀 Project Overview
 
-**Lexis** (named after the genius inventor from Lufia II) is an agnostic fullstack TypeScript monorepo where all applications and libraries are treated as packages within the `packages/` directory, while global agreements live in `contracts/`.
+**Lexis** is an agnostic fullstack TypeScript monorepo where all applications and libraries are treated as packages within the `packages/` directory, while global agreements live in `contracts/`.
 
 ### Core Technology Stack
 - **Workspaces**: PNPM (Flat architecture in `packages/*`)
-- **Database**: Prisma (@lexis/database) with **self-healing** capabilities.
+- **Database**: Prisma 7 (@lexis/database) using **Driver Adapters** (@prisma/adapter-pg).
 - **Contracts**: Design-First approach using `@lexis/contracts` for shared interfaces and enums.
 - **Infrastructure**: Docker Compose (PostgreSQL, PgAdmin)
 
@@ -16,21 +16,20 @@ This file provides the foundational context and development mandates for the **L
 
 ## 🏗️ Architecture & Conventions
 
-### 1. Project Structure
-- `contracts/`: **Global agreements**. Interfaces, Enums, and DTOs that all services must implement. Alias: `@lexis/contracts`.
-- `packages/database/`: Independent Prisma client. Alias: `@lexis/database`.
-- `packages/*`: Framework-agnostic applications (Angular, NestJS, Astro, etc.).
-- `tools/`: Orchestration and generation scripts.
+### 1. Prisma 7 Standard (Critical)
+- **Schema**: `schema.prisma` contains NO database URL. It is structural only.
+- **Config**: Connection URL is managed in `packages/database/prisma.config.ts`.
+- **Adapters**: All clients MUST use Driver Adapters. For PostgreSQL, use `pg` + `@prisma/adapter-pg`.
+- **Boilerplate**:
+  ```typescript
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
+  super({ adapter });
+  ```
 
 ### 2. Environment Management (SSOT)
 - Root `.env` is the **Single Source of Truth**.
-- **Decentralized Config**: Frontend projects (like Angular) manage their own environments via local `scripts/set-env.js`.
-- **Global Orchestration**: `pnpm generate:env` from root triggers local generation only where present (`--if-present`).
-
-### 3. Development Mandates
-- **Contract-First**: Define entities in `contracts/` before implementing them in services.
-- **Self-Healing**: If `@lexis/database` is missing, `pnpm db:enable <pkg>` will automatically reconstruct it.
-- **Workspace Protocol**: Always use `workspace:*` for internal dependencies.
+- Frontend projects manage their own environments via local `scripts/set-env.js`.
 
 ---
 
@@ -39,20 +38,13 @@ This file provides the foundational context and development mandates for the **L
 ### Project Generation (Forging)
 - `pnpm create:angular <name>`: Create a new Angular project with local env scripts.
 - `pnpm create:nest <name>`: Create a new NestJS service.
-- `pnpm create:astro / create:next / create:vite <name>`: Scaffolding for other web frameworks.
 
 ### Database & Prisma
-- `pnpm db:enable <pkg>`: **Magic Command**. Links Prisma and generates boilerplate (like `PrismaService` for NestJS).
-- `pnpm db:up / db:down`: Manage PostgreSQL container.
+- `pnpm db:enable <pkg>`: **Magic Command**. Links Prisma 7 and generates Adapter-based boilerplate.
 - `pnpm db:migrate / db:generate`: Prisma operations.
-
-### Development
-- `pnpm dev`: Parallel start of DB, Prisma watch, and core services.
-- `pnpm generate:env`: Update environments across all supporting packages.
 
 ---
 
 ## ⚠️ Important Context for Gemini
 - **Source-First**: Prefer direct imports from `@lexis/database` and `@lexis/contracts`.
-- **Automation**: Use `tools/create-pkg.js` for new projects to ensure they follow Lexis directory standards.
-- **Resilience**: The workspace is designed to be self-healing; don't be afraid to reconstruct missing core packages using the provided tools.
+- **Prisma 7 Compatibility**: Always specify `moduleFormat = "cjs"` in schema and use explicit adapters in constructors to avoid engine conflicts.

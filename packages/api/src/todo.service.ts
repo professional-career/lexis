@@ -7,7 +7,7 @@ export class TodoService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<ITodo[]> {
-    const todos = await this.prisma.client.todo.findMany();
+    const todos = await this.prisma.todo.findMany();
     return todos.map(todo => ({
       ...todo,
       status: todo.status as unknown as TODO_STATUS
@@ -15,7 +15,7 @@ export class TodoService {
   }
 
   async create(data: ICreateTodoDto): Promise<ITodo> {
-    const todo = await this.prisma.client.todo.create({
+    const todo = await this.prisma.todo.create({
       data: {
         title: data.title,
         description: data.description,
@@ -29,7 +29,7 @@ export class TodoService {
   }
 
   async update(id: string, data: IUpdateTodoDto): Promise<ITodo> {
-    const todo = await this.prisma.client.todo.update({
+    const todo = await this.prisma.todo.update({
       where: { id },
       data: {
         title: data.title,
@@ -44,6 +44,6 @@ export class TodoService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.client.todo.delete({ where: { id } });
+    await this.prisma.todo.delete({ where: { id } });
   }
 }
