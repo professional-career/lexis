@@ -14,9 +14,13 @@ export const environment = {
 };
 `;
 
-mkdirSync('./apps/client/src/environments', { recursive: true });
-writeFileSync( targetPath, envFileContent, (err) => {throw new Error(err)});
-writeFileSync( targetPathDev, envFileContent, (err) => {throw new Error(err)});
+const targetDir = './packages/client/src/environments';
+if (!require('fs').existsSync(targetDir)) {
+  require('fs').mkdirSync(targetDir, { recursive: true });
+}
+
+writeFileSync( targetPath, envFileContent, (err) => {if(err) throw new Error(err)});
+writeFileSync( targetPathDev, envFileContent, (err) => {if(err) throw new Error(err)});
 
 console.log(`✅ Angular environment generado en ${targetPath}`);
 console.log(`✅ Angular def-environment generado en ${targetPathDev}`);
