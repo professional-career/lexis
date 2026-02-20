@@ -112,7 +112,7 @@ pnpm prod
 Lexis utiliza una estrategia de **Single Source of Truth**:
 1. El archivo `.env` en la raíz contiene todas las credenciales y URLs.
 2. Los servicios de **Backend** leen este archivo directamente.
-3. Los servicios de **Frontend** reciben las variables públicas mediante el script `tools/set-env.js` (no edites los archivos `environment.ts` manualmente).
+3. Los servicios de **Frontend** reciben las variables públicas mediante su propio script `scripts/set-env.js` (ejecutado automáticamente al iniciar o mediante `pnpm generate:env`). No edites los archivos `environment.ts` manualmente.
 
 ---
 *Lexis - Menos fricción, más código e inventos geniales.*

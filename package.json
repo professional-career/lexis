@@ -31,7 +31,7 @@
     "create:nest": "node tools/create-pkg.js nest",
     
     "// --- ATAJOS A LOS PROYECTOS ---": "",
-    "generate:env": "node tools/set-env.js",
+    "generate:env": "pnpm --filter \"*\" run generate:env",
     "api:format": "pnpm --filter api run format",
     "api:dev": "wait-on tcp:5432 && pnpm --filter api run start:dev",
     "api:build": "pnpm --filter api run build",

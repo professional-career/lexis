@@ -1,5 +1,6 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 const type = process.argv[2];
 const name = process.argv[3];
@@ -29,7 +30,6 @@ if (!cmd) {
 
 console.log(`🧪 Lexis está forjando un nuevo invento: ${name} (${type})...`);
 
-// Ejecutamos el comando dentro de la carpeta packages
 const executable = type === 'next' || type === 'nest' || type === 'angular' ? 'npx' : 'pnpm';
 
 const result = spawnSync(executable, cmd, {
@@ -39,14 +39,54 @@ const result = spawnSync(executable, cmd, {
 });
 
 if (result.status === 0) {
-  console.log(`
-✅ ¡Invento "${name}" creado con éxito en packages/${name}!`);
-  console.log(`
-💡 Próximos pasos:`);
+  // --- LÓGICA DE POST-GENERACIÓN ESPECÍFICA ---
+  
+  if (type === 'angular') {
+    console.log(`📦 Configurando sistema de entornos local para ${name}...`);
+    
+    const scriptsDir = path.join(targetDir, 'scripts');
+    if (!fs.existsSync(scriptsDir)) fs.mkdirSync(scriptsDir);
+
+    const setEnvContent = `const { writeFileSync, mkdirSync, existsSync } = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
+
+const targetDir = path.join(__dirname, '../src/environments');
+const targetPath = path.join(targetDir, 'environment.ts');
+const targetPathDev = path.join(targetDir, 'environment.development.ts');
+
+const envFileContent = \`
+export const environment = {
+  production: false,
+  apiUrl: '\${process.env.API_URL || 'http://localhost:3000/api'}',
+  appName: '\${process.env.APP_NAME || 'Lexis App'}',
+  version: '\${require('../package.json').version}'
+};
+\`;
+
+if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
+writeFileSync(targetPath, envFileContent);
+writeFileSync(targetPathDev, envFileContent);
+
+console.log('✅ Entornos locales generados en ' + targetDir);
+`;
+    fs.writeFileSync(path.join(scriptsDir, 'set-env.js'), setEnvContent);
+
+    // Actualizar package.json local
+    const pkgPath = path.join(targetDir, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkg.scripts['generate:env'] = "node scripts/set-env.js";
+    // Asegurar que el comando start genere el env primero
+    pkg.scripts['start'] = "pnpm run generate:env && ng serve";
+    pkg.scripts['build'] = "pnpm run generate:env && ng build";
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  }
+
+  console.log(`\n✅ ¡Invento "${name}" creado con éxito en packages/${name}!`);
+  console.log(`\n💡 Próximos pasos:`);
   console.log(`1. pnpm install (para vincular el workspace)`);
-  console.log(`2. pnpm add @lexis/database --filter ${name} (si necesitas DB)`);
+  console.log(`2. pnpm db:enable ${name} (si necesitas DB)`);
 } else {
-  console.error(`
-❌ Error al crear el invento.`);
+  console.error(`\n❌ Error al crear el invento.`);
   process.exit(result.status);
 }
