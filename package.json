@@ -16,6 +16,7 @@
     "db:migrate": "pnpm --filter @lexis/database run db:migrate",
     "db:watch": "pnpm --filter @lexis/database exec prisma generate --watch",
     "db:build": "pnpm --filter @lexis/database run build",
+    "db:enable": "node tools/enable-db.js",
     
     "// --- GENERADORES (DX) ---": "",
     "api:res": "pnpm --filter api exec nest g resource",

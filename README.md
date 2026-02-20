@@ -63,6 +63,7 @@ Todos los comandos se ejecutan desde la raíz. Lexis utiliza `--filter` de PNPM 
 | `pnpm db:up` | Levanta el contenedor de PostgreSQL. |
 | `pnpm db:down` | Detiene el contenedor. |
 | `pnpm db:migrate` | Ejecuta migraciones pendientes. |
+| `pnpm db:enable <pkg>` | **Mágico**: Habilita Prisma y genera boilerplate en el paquete. |
 | `pnpm db:nuke` | ⚠️ **Borra la base de datos y sus volúmenes**. |
 
 ### Generadores (Scaffolding)
