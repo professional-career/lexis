@@ -112,7 +112,24 @@ pnpm prod
 Lexis utiliza una estrategia de **Single Source of Truth**:
 1. El archivo `.env` en la raíz contiene todas las credenciales y URLs.
 2. Los servicios de **Backend** leen este archivo directamente.
-3. Los servicios de **Frontend** reciben las variables públicas mediante el script `tools/set-env.js` (no edites los archivos `environment.ts` manualmente).
+3. Los servicios de **Frontend** reciben las variables públicas mediante su propio script `scripts/set-env.js` (ejecutado automáticamente al iniciar o mediante `pnpm generate:env`). No edites los archivos `environment.ts` manualmente.
+
+## 🐛 Troubleshooting
+
+| Problema | Solución |
+|----------|----------|
+| **Error: Port 5432 is already allocated** | Tienes otra instancia de Postgres corriendo. Ejecuta `pnpm db:down` o detén tu servicio local de Postgres. |
+| **Error: "@lexis/database" not found** | Ejecuta `pnpm install` en la raíz para que el workspace vincule el paquete local correctamente. |
+| **Cambios en .env no se reflejan en Web** | Ejecuta `pnpm generate:env` para forzar la actualización de los archivos `environment.ts`. |
+| **Prisma no reconoce un nuevo modelo** | Ejecuta `pnpm db:generate` desde la raíz para actualizar el cliente global. |
+| **Error de scripts en Windows** | Si tienes problemas con los permisos de ejecución, asegúrate de usar un terminal con privilegios suficientes (PowerShell/CMD). |
+
+## 💡 Consideraciones para Inventores
+
+- **Protocolo Workspace**: Al añadir dependencias entre paquetes locales, usa siempre el protocolo `workspace:*` (ej. `pnpm add @lexis/contracts@workspace:* --filter api`).
+- **Autosanación**: Si borras accidentalmente `packages/database`, el comando `pnpm db:enable <pkg>` lo reconstruirá automáticamente con la configuración base.
+- **Contratos Inmutables**: Antes de definir una entidad en tu API, piensa si debería vivir en `contracts/`. Esto garantiza que todos los servicios hablen el mismo idioma.
+- **Scripts Descentralizados**: En proyectos Angular, el generador inyecta un script en `scripts/set-env.js`. Si tu aplicación requiere variables de entorno adicionales, ese es el lugar donde debes añadirlas.
 
 ---
 *Lexis - Menos fricción, más código e inventos geniales.*
